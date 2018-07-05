@@ -1,0 +1,21 @@
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+   
+canvas {
+    display: flex;
+ 
+    background-color: rgb(171, 224, 222);
+}
+.sprite-wrapper{
+    left: -3000px;
+    top: -3000px;
+    position: absolute;
+}
+
+.cat-img{
+    width: 100px;
+    height: 100px;
+}
