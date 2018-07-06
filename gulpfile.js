@@ -32,13 +32,13 @@ gulp.task('cssmin', function () {
 gulp.task('assets', function () {
     return gulp.src('src/assets/**', { since: gulp.lastRun('assets') })
         .pipe(gulp.dest('public'));
-})
+});
 
 var customOpts = {
     entries: ['./src/js/main.js'],
     debug: true,
     transform: [
-        ['babelify', { presets: ["es2015"] }]
+        ['babelify', { presets: ['es2015'] }]
     ]
 };
 var opts = assign({}, watchify.args, customOpts);
@@ -47,7 +47,7 @@ var b = watchify(browserify(opts));
 gulp.task('bundle', function () {
     return b.bundle()
         .on('error', function (err) {
-            console.log(err.message);
+            console.error(err.message);
             browserSync.notify(err.message, 3000);
             this.emit('end');
         })
