@@ -1,5 +1,6 @@
 import Hero from './hero';
 import DummyEnemy from './dummyEnemy';
+import FireStore from '../utils/firebase';
 
 export default class GameState {
 	constructor() {
@@ -17,12 +18,13 @@ export default class GameState {
 		this.hero = new Hero(this);
 
 		this.gamePlays = false;
+		this.timerHandler = 0;
+		this.gameTimer = 0;
 		this.setUpGame();
-		this.timer = 0;
 	}
 
 	setUpGame() {
-		this.timer = setInterval(() => {
+		this.timerHandler = setInterval(() => {
 			this.context.clearRect(0, 0, this.width, this.height);
 
 			this.characters.forEach(character => this.checkCharactersIntersection(this.hero, character));
@@ -44,13 +46,20 @@ export default class GameState {
 	}
 
 	runGame() {
+		this.gameTimer = new Date().getTime();
 		this.gamePlays = true;
 		this.baseSpeed = 5;
 	}
-	pauseGame() {
+
+	endGame() {
+		clearInterval(this.timerHandler);
 		this.gamePlays = false;
 		this.baseSpeed = 0;
-		clearInterval(this.timer);
+		let score = (new Date().getTime() - this.gameTimer) / 1000;
+		let name = prompt(`Your score is ${score} secongs.\n Enter your name`, 'Ninja');
+		name && FireStore.saveScore({
+			name, score
+		});
 	}
 	checkCharactersIntersection(hero, enemy) {
 		let deltaX = 30;
@@ -58,7 +67,7 @@ export default class GameState {
 		if (((hero.position.x + deltaX <= (enemy.position.x + enemy.width)) && ((hero.position.x + hero.width) >= enemy.position.x + deltaX)) &&
 			((hero.position.y + deltaY <= (enemy.position.y + enemy.height)) && ((hero.position.y + hero.height) >= enemy.position.y + deltaY))) {
 			hero.die();
-			this.pauseGame();
+			this.endGame();
 		}
 	}
 }

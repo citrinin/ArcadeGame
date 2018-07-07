@@ -1,5 +1,6 @@
 import GameState from './gameObjects/gameState';
 import detectMobile from './utils/detectMobile';
+import FireStore from './utils/firebase';
 
 let content = document.querySelector('.content');
 addButtonsForMobile();
@@ -32,7 +33,23 @@ const routes = [
         match: 'scores',
         onEnter: () => {
             changeActivePage('scores');
-            content.innerHTML = '<h1 class="about"><span>Scores</span><h1>';
+
+            FireStore.getScores().then(result => {
+                content.innerHTML = '<h1 class="about"><span>Scores</span></h1>';
+                let ol = document.createElement('ol');
+                result.forEach(item => {
+                    let li = document.createElement('li');
+                    li.innerHTML = `${item.name} - ${item.score}`;
+                    ol.appendChild(li);
+                });
+
+                let divForDivision = document.createElement('div');
+                divForDivision.classList.add('w-100');
+                content.appendChild(divForDivision);
+                let div = document.createElement('div');
+                div.appendChild(ol);
+                content.appendChild(div);
+            });
         }
     },
 ];
