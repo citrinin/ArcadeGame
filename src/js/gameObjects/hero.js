@@ -15,6 +15,9 @@ export default class Hero extends Person {
 
     setUpHero() {
         document.addEventListener('keydown', (event) => {
+            if (event.keyCode < 37 || event.keyCode > 40) {
+                return;
+            }
             if (!this.game.gamePlays) {
                 this.game.runGame();
                 this.speed = this.game.baseSpeed * this.game.level;
@@ -32,5 +35,8 @@ export default class Hero extends Person {
                 this.directionAngle = Math.PI / 2;
             }
         });
+    }
+    die() {
+        this.sprites = [].slice.call(document.querySelectorAll('.cat-dead-img'));
     }
 }

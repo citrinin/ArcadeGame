@@ -14,7 +14,7 @@ export default class GameState {
 		this.context = this.canvas.getContext('2d');
 
 		this.characters = new Array(2).fill(0).map(() => new DummyEnemy(this));
-		this.characters.push(new Hero(this));
+		this.hero = new Hero(this);
 
 		this.gamePlays = false;
 		this.setUpGame();
@@ -24,6 +24,10 @@ export default class GameState {
 	setUpGame() {
 		this.timer = setInterval(() => {
 			this.context.clearRect(0, 0, this.width, this.height);
+
+			this.characters.forEach(character => this.checkCharactersIntersection(this.hero, character));
+
+			this.drawCharacter(this.hero);
 			this.characters.forEach(character => this.drawCharacter(character));
 		}, 30);
 	}
@@ -47,5 +51,14 @@ export default class GameState {
 		this.gamePlays = false;
 		this.baseSpeed = 0;
 		clearInterval(this.timer);
+	}
+	checkCharactersIntersection(hero, enemy) {
+		let deltaX = 30;
+		let deltaY = 5;
+		if (((hero.position.x + deltaX <= (enemy.position.x + enemy.width)) && ((hero.position.x + hero.width) >= enemy.position.x + deltaX)) &&
+			((hero.position.y + deltaY <= (enemy.position.y + enemy.height)) && ((hero.position.y + hero.height) >= enemy.position.y + deltaY))) {
+			hero.die();
+			this.pauseGame();
+		}
 	}
 }

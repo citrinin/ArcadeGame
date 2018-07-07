@@ -1,8 +1,7 @@
 export default class Person {
-    constructor(gameState, selector, mainHero) {
-        this.mainHero = mainHero;
+    constructor(gameState, selector) {
         this.game = gameState;
-        this.directionAngle = this.mainHero ? 0 : 2 * Math.PI * Math.random();
+        this.directionAngle = 2 * Math.PI * Math.random();
         this.position = {
             x: 0,
             y: 0
