@@ -15,7 +15,7 @@ const routes = [
         match: 'about',
         onEnter: () => {
             changeActivePage('about');
-            content.innerHTML = '<h1 class="about"><span>Super game Cats vs Ninjas</span><h1>';
+            content.innerHTML = '<h1 class="about"><span>Super game Cat vs Ninjas</span><h1>';
         }
     },
     {
