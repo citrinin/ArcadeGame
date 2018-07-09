@@ -3,12 +3,25 @@ import DummyEnemy from './dummyEnemy';
 import FireStore from '../utils/firebase';
 
 export default class GameState {
-	constructor() {
-		this.width = 800;
-		this.height = 800;
+	constructor(elementToDraw) {
+		// this.width = 800;
+		// this.height = 800;
+
+		this.width = window.innerWidth >= 1000 ? 1000 : window.innerWidth;
+
+		this.height = (document.documentElement.clientHeight
+			|| document.body.clientHeight) - 160;
+
+		this.containter = elementToDraw;
+		window.gamestate = [];
+	}
+
+	setUpGame() {
 		this.level = 1;
 		this.baseSpeed = 0;
-		this.canvas = document.querySelector('canvas');
+		this.canvas = document.createElement('canvas');
+		this.containter.innerHTML = '';
+		this.containter.appendChild(this.canvas);
 		this.canvas.width = this.width;
 		this.canvas.height = this.height;
 
@@ -20,10 +33,8 @@ export default class GameState {
 		this.gamePlays = false;
 		this.timerHandler = 0;
 		this.gameTimer = 0;
-		this.setUpGame();
-	}
 
-	setUpGame() {
+
 		this.timerHandler = setInterval(() => {
 			this.context.clearRect(0, 0, this.width, this.height);
 
@@ -32,6 +43,7 @@ export default class GameState {
 			this.drawCharacter(this.hero);
 			this.characters.forEach(character => this.drawCharacter(character));
 		}, 30);
+		window.gamestate.push(this.timerHandler);
 	}
 
 	drawCharacter(character) {
@@ -53,10 +65,15 @@ export default class GameState {
 
 	endGame() {
 		clearInterval(this.timerHandler);
+		window.gamestate = window.gamestate.filter(item => item !== this.timerHandler);
 		this.gamePlays = false;
 		this.baseSpeed = 0;
+
+	}
+	loseGame() {
+		this.endGame();
 		let score = (new Date().getTime() - this.gameTimer) / 1000;
-		let name = prompt(`Your score is ${score} secongs.\n Enter your name`, 'Ninja');
+		let name = prompt(`Your score is ${score} seconds.\n Enter your name`, 'Ninja');
 		name && FireStore.saveScore({
 			name, score
 		});
@@ -67,7 +84,7 @@ export default class GameState {
 		if (((hero.position.x + deltaX <= (enemy.position.x + enemy.width)) && ((hero.position.x + hero.width) >= enemy.position.x + deltaX)) &&
 			((hero.position.y + deltaY <= (enemy.position.y + enemy.height)) && ((hero.position.y + hero.height) >= enemy.position.y + deltaY))) {
 			hero.die();
-			this.endGame();
+			this.loseGame();
 		}
 	}
 }

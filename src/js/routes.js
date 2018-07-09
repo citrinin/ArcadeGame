@@ -3,6 +3,8 @@ import detectMobile from './utils/detectMobile';
 import FireStore from './utils/firebase';
 
 let content = document.querySelector('.content');
+let game = new GameState(content);
+
 addButtonsForMobile();
 
 const routes = [
@@ -26,7 +28,10 @@ const routes = [
             let canvas = document.createElement('canvas');
             content.innerHTML = '';
             content.appendChild(canvas);
-            new GameState();
+            game.setUpGame();
+        },
+        onLeave: () => {
+            game.endGame();
         }
     },
     {
