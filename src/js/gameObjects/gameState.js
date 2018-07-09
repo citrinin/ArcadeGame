@@ -1,5 +1,6 @@
 import Hero from './hero';
 import DummyEnemy from './dummyEnemy';
+import SmartEnemy from './smartEnemy';
 import FireStore from '../utils/firebase';
 
 export default class GameState {
@@ -13,27 +14,30 @@ export default class GameState {
 			|| document.body.clientHeight) - 160;
 
 		this.containter = elementToDraw;
-		window.gamestate = [];
 	}
 
 	setUpGame() {
 		this.level = 1;
 		this.baseSpeed = 0;
+
 		this.canvas = document.createElement('canvas');
 		this.containter.innerHTML = '';
 		this.containter.appendChild(this.canvas);
+
+
+
 		this.canvas.width = this.width;
 		this.canvas.height = this.height;
 
 		this.context = this.canvas.getContext('2d');
 
 		this.characters = new Array(2).fill(0).map(() => new DummyEnemy(this));
+		this.characters.push(new SmartEnemy(this));
 		this.hero = new Hero(this);
 
 		this.gamePlays = false;
-		this.timerHandler = 0;
-		this.gameTimer = 0;
 
+		this.gameTimer = 0;
 
 		this.timerHandler = setInterval(() => {
 			this.context.clearRect(0, 0, this.width, this.height);
@@ -43,7 +47,6 @@ export default class GameState {
 			this.drawCharacter(this.hero);
 			this.characters.forEach(character => this.drawCharacter(character));
 		}, 30);
-		window.gamestate.push(this.timerHandler);
 	}
 
 	drawCharacter(character) {
@@ -55,17 +58,22 @@ export default class GameState {
 		} else {
 			this.context.drawImage(character.getNextSprite(), character.position.x, character.position.y, character.width, character.height);
 		}
+		this.context.beginPath();
+		this.context.moveTo(character.position.x, character.position.y);
+		this.context.lineTo(character.position.x + 200 * Math.cos(character.directionAngle), character.position.y + 200 * Math.sin(character.directionAngle));
+		this.context.stroke();
 	}
 
 	runGame() {
 		this.gameTimer = new Date().getTime();
 		this.gamePlays = true;
 		this.baseSpeed = 5;
+		this.setLevel();
 	}
 
 	endGame() {
 		clearInterval(this.timerHandler);
-		window.gamestate = window.gamestate.filter(item => item !== this.timerHandler);
+		clearInterval(this.levelTimer);
 		this.gamePlays = false;
 		this.baseSpeed = 0;
 
@@ -86,5 +94,24 @@ export default class GameState {
 			hero.die();
 			this.loseGame();
 		}
+	}
+
+	setLevel() {
+		this.levelTimer = setInterval(() => {
+			this.level += 1;
+			this.characters.push(new DummyEnemy(this));
+			if (this.level % 2 == 1) {
+				this.characters.push(new SmartEnemy(this));
+			}
+
+			let message = document.createElement('div');
+			message.classList.add('level-up');
+			message.innerHTML = `Level Up! Current level - ${this.level}`;
+
+			this.containter.appendChild(message);
+			setTimeout(() => {
+				this.containter.removeChild(message);
+			}, 1000);
+		}, 10000);
 	}
 }

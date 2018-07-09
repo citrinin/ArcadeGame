@@ -25,9 +25,6 @@ const routes = [
         match: 'game',
         onEnter: () => {
             changeActivePage('game');
-            let canvas = document.createElement('canvas');
-            content.innerHTML = '';
-            content.appendChild(canvas);
             game.setUpGame();
         },
         onLeave: () => {

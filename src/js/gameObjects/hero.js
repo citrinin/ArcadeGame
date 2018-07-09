@@ -4,8 +4,8 @@ export default class Hero extends Person {
     constructor(gameState) {
         super(gameState, '.cat-img');
         this.setUpHero();
-        this.width = 115;
-        this.height = 100;
+        this.width = 85;
+        this.height = 75;
         this.position = {
             x: (this.game.width - this.width) / 2,
             y: this.game.height - this.height
@@ -20,7 +20,7 @@ export default class Hero extends Person {
             }
             if (!this.game.gamePlays) {
                 this.game.runGame();
-                this.speed = this.game.baseSpeed * this.game.level;
+                this.speed = this.game.baseSpeed * this.game.level * 10;
             }
             if (event.keyCode === 37) {
                 this.directionAngle = Math.PI;
@@ -35,6 +35,23 @@ export default class Hero extends Person {
                 this.directionAngle = Math.PI / 2;
             }
         });
+    }
+    step() {
+        this.speed = this.game.baseSpeed * this.game.level / 2;
+        this.position.x += Math.cos(this.directionAngle) * this.speed;
+        if (this.position.x + this.width / 2 > this.game.width) {
+            this.position.x = -this.width / 2;
+        }
+        if (this.position.x + this.width / 2 < 0) {
+            this.position.x = this.game.width - this.width / 2;
+        }
+        this.position.y += Math.sin(this.directionAngle) * this.speed;
+        if (this.position.y + this.height / 2 > this.game.height) {
+            this.position.y = -this.height / 2;
+        }
+        if (this.position.y + this.height / 2 < 0) {
+            this.position.y = this.game.height - this.height / 2;
+        }
     }
     die() {
         this.sprites = [].slice.call(document.querySelectorAll('.cat-dead-img'));

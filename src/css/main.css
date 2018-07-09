@@ -9,6 +9,14 @@ canvas {
  
     background-color: rgb(171, 224, 222);
 }
+
+.level-up{
+    position: absolute;
+    top: 10;
+    font-size: 30px;
+    font-weight: bold;
+}
+
 .sprite-wrapper{
     left: -3000px;
     top: -3000px;
