@@ -22,7 +22,8 @@ export default class GameState {
 		this.context = this.canvas.getContext('2d');
 
 		this.hero = new Hero(this);
-		this.characters = new Array(2).fill(0).map(() => new DummyEnemy(this));
+		this.characters = [];
+		// this.characters = new Array(2).fill(0).map(() => new DummyEnemy(this));
 		this.characters.push(new SmartEnemy(this));
 
 		this.level = 1;
@@ -37,18 +38,11 @@ export default class GameState {
 
 			this.drawCharacter(this.hero);
 			this.characters.forEach(character => this.drawCharacter(character));
-		}, 30);
+		}, 100);
 	}
 
 	drawCharacter(character) {
-		if (character.imageOrientation()) {
-			this.context.save();
-			this.context.scale(-1, 1);
-			this.context.drawImage(character.getNextSprite(), character.position.x * -1, character.position.y, character.width * -1, character.height);
-			this.context.restore();
-		} else {
-			this.context.drawImage(character.getNextSprite(), character.position.x, character.position.y, character.width, character.height);
-		}
+		this.context.drawImage(character.getNextSprite(), character.position.x, character.position.y, character.width, character.height);
 	}
 
 	runGame() {
@@ -86,7 +80,7 @@ export default class GameState {
 	setLevel() {
 		this.levelTimer = setInterval(() => {
 			this.level += 1;
-			this.characters.push(new DummyEnemy(this));
+			//this.characters.push(new DummyEnemy(this));
 			if (this.level % 2 == 1) {
 				this.characters.push(new SmartEnemy(this));
 			}

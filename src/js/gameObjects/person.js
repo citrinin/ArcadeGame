@@ -1,12 +1,11 @@
 export default class Person {
-    constructor(gameState, selector) {
+    constructor(gameState) {
         this.game = gameState;
         this.directionAngle = 2 * Math.PI * Math.random();
         this.position = {
             x: 0,
             y: 0
         };
-        this.sprites = [].slice.call(document.querySelectorAll(selector));
         this.speed = gameState.level * gameState.baseSpeed / 2;
         this.currentImg = 0;
     }
@@ -18,10 +17,6 @@ export default class Person {
         return this.sprites[this.currentImg++];
     }
 
-    imageOrientation() {
-        return this.directionAngle >= Math.PI / 2 && this.directionAngle <= Math.PI * 3 / 2;
-    }
-
     step() {
         this.getSpeed();
         this.position.x += Math.cos(this.directionAngle) * this.speed;
@@ -31,7 +26,7 @@ export default class Person {
         if (this.position.x + this.width / 2 < 0) {
             this.position.x = this.game.width - this.width / 2;
         }
-        this.position.y += Math.sin(this.directionAngle) * this.speed;
+        this.position.y -= Math.sin(this.directionAngle) * this.speed;
         if (this.position.y + this.height / 2 > this.game.height) {
             this.position.y = -this.height / 2;
         }
@@ -43,3 +38,5 @@ export default class Person {
         this.speed = this.game.baseSpeed * this.game.level / 2;
     }
 }
+
+

@@ -1,11 +1,12 @@
-import Person from './person';
+import SmartPerson from './smartPerson';
 
-export default class SmartEnemy extends Person {
+export default class SmartEnemy extends SmartPerson {
     constructor(gameState) {
-        super(gameState, '.smart-enemy-img');
-        this.range = 400;
-        this.width = 75;
-        this.height = 95;
+        super(gameState, 'rogue');
+        this.selectSprites();
+        this.range = 300;
+        this.width = 60;
+        this.height = 60;
         this.generatePosition();
     }
     step() {
@@ -15,9 +16,9 @@ export default class SmartEnemy extends Person {
             let atan = Math.atan((heroPosition.y - enemyPosition.y) / (heroPosition.x - enemyPosition.x));
             if (((heroPosition.x > enemyPosition.x) && (heroPosition.y < enemyPosition.y)) ||
                 ((heroPosition.x - enemyPosition.x > 0) && (heroPosition.y - enemyPosition.y > 0))) {
-                this.directionAngle = atan; //ok
+                this.directionAngle = atan + Math.PI; //ok
             } else {
-                this.directionAngle = Math.PI + atan; //ok
+                this.directionAngle = atan; //ok
             }
         }
         super.step();
