@@ -20,6 +20,7 @@ export default class Hero extends SmartPerson {
             switch (event.keyCode) {
                 case 37: {
                     this.directionAngle = Math.PI;
+                    // 
                     break;
                 }
                 case 38: {
@@ -40,6 +41,10 @@ export default class Hero extends SmartPerson {
             }
             if (!this.game.gamePlays) {
                 this.game.runGame();
+            }
+            //запоминаем движения героя
+            if (this.game.originalGame) {
+                this.game.replayData.heroMoves.push({ event, time: this.game.gameTimer - new Date().getTime() });
             }
             this.selectSprites();
         });
