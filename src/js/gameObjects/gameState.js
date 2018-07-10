@@ -58,10 +58,6 @@ export default class GameState {
 		} else {
 			this.context.drawImage(character.getNextSprite(), character.position.x, character.position.y, character.width, character.height);
 		}
-		this.context.beginPath();
-		this.context.moveTo(character.position.x, character.position.y);
-		this.context.lineTo(character.position.x + 200 * Math.cos(character.directionAngle), character.position.y + 200 * Math.sin(character.directionAngle));
-		this.context.stroke();
 	}
 
 	runGame() {
