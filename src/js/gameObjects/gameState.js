@@ -5,9 +5,6 @@ import FireStore from '../utils/firebase';
 
 export default class GameState {
 	constructor(elementToDraw) {
-		// this.width = 800;
-		// this.height = 800;
-
 		this.width = window.innerWidth >= 1000 ? 1000 : window.innerWidth;
 
 		this.height = (document.documentElement.clientHeight
@@ -17,26 +14,20 @@ export default class GameState {
 	}
 
 	setUpGame() {
-		this.level = 1;
-		this.baseSpeed = 0;
-
 		this.canvas = document.createElement('canvas');
 		this.containter.innerHTML = '';
 		this.containter.appendChild(this.canvas);
-
-
-
 		this.canvas.width = this.width;
 		this.canvas.height = this.height;
-
 		this.context = this.canvas.getContext('2d');
 
+		this.hero = new Hero(this);
 		this.characters = new Array(2).fill(0).map(() => new DummyEnemy(this));
 		this.characters.push(new SmartEnemy(this));
-		this.hero = new Hero(this);
 
+		this.level = 1;
+		this.baseSpeed = 0;
 		this.gamePlays = false;
-
 		this.gameTimer = 0;
 
 		this.timerHandler = setInterval(() => {
@@ -83,8 +74,8 @@ export default class GameState {
 		});
 	}
 	checkCharactersIntersection(hero, enemy) {
-		let deltaX = 30;
-		let deltaY = 5;
+		let deltaX = 35;
+		let deltaY = 10;
 		if (((hero.position.x + deltaX <= (enemy.position.x + enemy.width)) && ((hero.position.x + hero.width) >= enemy.position.x + deltaX)) &&
 			((hero.position.y + deltaY <= (enemy.position.y + enemy.height)) && ((hero.position.y + hero.height) >= enemy.position.y + deltaY))) {
 			hero.die();

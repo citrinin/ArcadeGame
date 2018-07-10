@@ -6,10 +6,7 @@ export default class SmartEnemy extends Person {
         this.range = 400;
         this.width = 75;
         this.height = 95;
-        this.position = {
-            x: Math.abs(this.width - this.game.width * Math.random()),
-            y: this.game.height / 2 * Math.random()
-        };
+        this.generatePosition();
     }
     step() {
         let heroPosition = this.game.hero.position;
@@ -26,6 +23,14 @@ export default class SmartEnemy extends Person {
         super.step();
     }
 
+    generatePosition() {
+        do {
+            this.position = {
+                x: Math.abs(this.width - this.game.width * Math.random()),
+                y: this.game.height / 2 * Math.random()
+            };
+        } while (this.getDistanceToHero() < 200);
+    }
 
     getDistanceToHero() {
         let hero = this.game.hero;
