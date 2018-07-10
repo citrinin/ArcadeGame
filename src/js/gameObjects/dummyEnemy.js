@@ -11,13 +11,17 @@ export default class DummyEnemy extends Person {
         if (this.game.originalGame) {
             this.game.replayData.dummyEnemies.push({
                 settings: {
-                    position: this.position,
+                    position: {
+                        x: this.position.x,
+                        y: this.position.y
+                    },
                     directionAngle: this.directionAngle
                 },
-                time: this.game.gameTimer - new Date().getTime()
+                time: new Date().getTime() - this.game.gameTimer
             });
         } else {
-            this.position = settings.position;
+            this.position.x = settings.position.x;
+            this.position.y = settings.position.y;
             this.directionAngle = settings.directionAngle;
         }
     }

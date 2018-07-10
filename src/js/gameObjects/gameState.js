@@ -36,8 +36,11 @@ export default class GameState {
 			this.characters = new Array(2).fill(0).map(() => new DummyEnemy(this));
 			this.characters.push(new SmartEnemy(this));
 		} else {
-			this.replayData.heroMoves.forEach(eventItem => {
-				setTimeout(() => document.dispatchEvent(eventItem.event), eventItem.time);
+			this.characters = [];
+			this.replayData.heroMoves.forEach(heroInfo => {
+				setTimeout(() => {
+					this.hero.directionAngle = heroInfo.directionAngle;
+				}, heroInfo.time);
 			});
 			this.replayData.smartEmenies.forEach(enemyInfo => {
 				setTimeout(() => { this.characters.push(new SmartEnemy(this, enemyInfo.settings)); }, enemyInfo.time);
@@ -76,8 +79,8 @@ export default class GameState {
 	}
 
 	checkCharactersIntersection(hero, enemy) {
-		let deltaX = 35;
-		let deltaY = 10;
+		let deltaX = 20;
+		let deltaY = 20;
 		if (((hero.position.x + deltaX <= (enemy.position.x + enemy.width)) && ((hero.position.x + hero.width) >= enemy.position.x + deltaX)) &&
 			((hero.position.y + deltaY <= (enemy.position.y + enemy.height)) && ((hero.position.y + hero.height) >= enemy.position.y + deltaY))) {
 			hero.die();
@@ -87,11 +90,13 @@ export default class GameState {
 
 	loseGame() {
 		this.endGame();
-		let score = (new Date().getTime() - this.gameTimer) / 1000;
-		let name = prompt(`Your score is ${score} seconds.\n Enter your name`, 'Ninja');
-		name && FireStore.saveScore({
-			name, score
-		});
+		if (this.originalGame) {
+			let score = (new Date().getTime() - this.gameTimer) / 1000;
+			let name = prompt(`Your score is ${score} seconds.\n Enter your name`, 'Ninja');
+			name && FireStore.saveScore({
+				name, score
+			});
+		}
 		this.addEndGameButtons();
 	}
 
@@ -105,30 +110,32 @@ export default class GameState {
 	setLevel() {
 		this.levelTimer = setInterval(() => {
 			this.level += 1;
-			this.characters.push(new DummyEnemy(this));
-			if (this.level % 2 == 1) {
-				this.characters.push(new SmartEnemy(this));
+			if (this.originalGame) {
+				this.characters.push(new DummyEnemy(this));
+				if (this.level % 2 == 1) {
+					this.characters.push(new SmartEnemy(this));
+				}
+				let message = document.createElement('div');
+				message.classList.add('level-up');
+				message.innerHTML = `Level Up! Current level - ${this.level}`;
+
+				this.containter.appendChild(message);
+				setTimeout(() => {
+					this.containter.removeChild(message);
+				}, 1000);
 			}
 
-			let message = document.createElement('div');
-			message.classList.add('level-up');
-			message.innerHTML = `Level Up! Current level - ${this.level}`;
-
-			this.containter.appendChild(message);
-			setTimeout(() => {
-				this.containter.removeChild(message);
-			}, 1000);
 		}, 10000);
 	}
 	addEndGameButtons() {
 		let divForButtons = document.createElement('div');
 		divForButtons.classList.add('end-buttons');
-		//divForButtons.innerHTML = '<button>Watch replay</button><button>Start new game</button>';
 
 		let replayButton = document.createElement('button');
-		replayButton.innerHTML = 'Watch replay';
+		replayButton.innerHTML = `Watch replay ${this.originalGame ? '' : 'again'}`;
 		replayButton.addEventListener('click', () => {
 			this.setUpGame(false);
+			this.runGame();
 		});
 
 		let startNewGameButton = document.createElement('button');

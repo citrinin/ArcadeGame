@@ -3,8 +3,10 @@ import SmartPerson from './smartPerson';
 export default class Hero extends SmartPerson {
     constructor(gameState) {
         super(gameState, 'knight');
-        this.setUpHero();
-        this.width = 75;
+        if (this.game.originalGame) {
+            this.setUpHero();
+        }
+        this.width = 55;
         this.height = 75;
         this.position = {
             x: (this.game.width - this.width) / 2,
@@ -20,7 +22,6 @@ export default class Hero extends SmartPerson {
             switch (event.keyCode) {
                 case 37: {
                     this.directionAngle = Math.PI;
-                    // 
                     break;
                 }
                 case 38: {
@@ -44,7 +45,7 @@ export default class Hero extends SmartPerson {
             }
             //запоминаем движения героя
             if (this.game.originalGame) {
-                this.game.replayData.heroMoves.push({ event, time: this.game.gameTimer - new Date().getTime() });
+                this.game.replayData.heroMoves.push({ directionAngle: this.directionAngle, time: new Date().getTime() - this.game.gameTimer });
             }
             this.selectSprites();
         });
