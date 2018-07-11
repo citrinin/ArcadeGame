@@ -1,13 +1,39 @@
 export default class Person {
-    constructor(gameState) {
+    constructor(gameState, selector) {
+        this.selector = selector;
+        this.getAllSprites();
         this.game = gameState;
         this.directionAngle = 2 * Math.PI * Math.random();
-        this.position = {
-            x: 0,
-            y: 0
-        };
         this.speed = gameState.level * gameState.baseSpeed / 2;
         this.currentImg = 0;
+    }
+    selectSprites() {
+        if ((this.directionAngle >= Math.PI * 5 / 4) && (this.directionAngle <= Math.PI * 7 / 4)) {
+            this.sprites = this.spritesCollection.down;
+            return;
+        }
+        if ((this.directionAngle >= Math.PI / 4) && (this.directionAngle <= Math.PI * 3 / 4)) {
+            this.sprites = this.spritesCollection.up;
+            return;
+        }
+        if ((this.directionAngle >= Math.PI * 3 / 4) && (this.directionAngle <= Math.PI * 5 / 4)) {
+            this.sprites = this.spritesCollection.left;
+            return;
+        }
+        this.sprites = this.spritesCollection.right;
+    }
+
+    getAllSprites() {
+        this.spritesCollection = {
+            left: this.getSprites(`.${this.selector}-left-img`),
+            right: this.getSprites(`.${this.selector}-right-img`),
+            up: this.getSprites(`.${this.selector}-up-img`),
+            down: this.getSprites(`.${this.selector}-down-img`)
+        };
+    }
+
+    getSprites(selector) {
+        return [].slice.call(document.querySelectorAll(selector));
     }
     getNextSprite() {
         this.step();
@@ -38,5 +64,3 @@ export default class Person {
         this.speed = this.game.baseSpeed * this.game.level / 2;
     }
 }
-
-

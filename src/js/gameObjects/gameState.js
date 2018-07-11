@@ -11,6 +11,7 @@ export default class GameState {
 			|| document.body.clientHeight) - 160;
 
 		this.containter = elementToDraw;
+		this.setUpHero();
 	}
 
 	setUpGame(originalGame = true) {
@@ -25,6 +26,7 @@ export default class GameState {
 
 		this.hero = new Hero(this);
 
+		this.characters = [];
 
 		//идет оригинальная игра?
 		if (this.originalGame) {
@@ -36,21 +38,25 @@ export default class GameState {
 			this.characters = new Array(2).fill(0).map(() => new DummyEnemy(this));
 			this.characters.push(new SmartEnemy(this));
 		} else {
-			this.characters = [];
+			console.log(this.replayData);
 			this.replayData.heroMoves.forEach(heroInfo => {
 				setTimeout(() => {
 					this.hero.directionAngle = heroInfo.directionAngle;
+					console.log('hero time ' + (new Date().getTime() - window.timer));
 				}, heroInfo.time);
 			});
 			this.replayData.smartEmenies.forEach(enemyInfo => {
 				setTimeout(() => { this.characters.push(new SmartEnemy(this, enemyInfo.settings)); }, enemyInfo.time);
 			});
 			this.replayData.dummyEnemies.forEach(enemyInfo => {
-				setTimeout(() => { this.characters.push(new DummyEnemy(this, enemyInfo.settings)); }, enemyInfo.time);
+				setTimeout(() => {
+					this.characters.push(new DummyEnemy(this, enemyInfo.settings));
+					console.log('enemy time ' + (new Date().getTime() - window.timer));
+
+				}, enemyInfo.time);
+
 			});
 		}
-
-
 
 		this.level = 1;
 		this.baseSpeed = 0;
@@ -72,7 +78,10 @@ export default class GameState {
 	}
 
 	runGame() {
-		this.gameTimer = new Date().getTime();
+		if (this.originalGame) {
+			this.gameTimer = new Date().getTime();
+		}
+		window.timer = new Date().getTime();
 		this.gamePlays = true;
 		this.baseSpeed = 5;
 		this.setLevel();
@@ -83,7 +92,6 @@ export default class GameState {
 		let deltaY = 20;
 		if (((hero.position.x + deltaX <= (enemy.position.x + enemy.width)) && ((hero.position.x + hero.width) >= enemy.position.x + deltaX)) &&
 			((hero.position.y + deltaY <= (enemy.position.y + enemy.height)) && ((hero.position.y + hero.height) >= enemy.position.y + deltaY))) {
-			hero.die();
 			this.loseGame();
 		}
 	}
@@ -148,5 +156,38 @@ export default class GameState {
 		divForButtons.appendChild(startNewGameButton);
 
 		this.containter.appendChild(divForButtons);
+	}
+	setUpHero() {
+		document.addEventListener('keydown', (event) => {
+			switch (event.keyCode) {
+				case 37: {
+					this.hero.directionAngle = Math.PI;
+					break;
+				}
+				case 38: {
+					this.hero.directionAngle = Math.PI / 2;
+					break;
+				}
+				case 39: {
+					this.hero.directionAngle = 0;
+					break;
+				}
+				case 40: {
+					this.hero.directionAngle = Math.PI / 2 * 3;
+					break;
+				}
+				default: {
+					return;
+				}
+			}
+			if (!this.gamePlays) {
+				this.runGame();
+			}
+			//запоминаем движения героя
+			if (this.originalGame) {
+				this.replayData.heroMoves.push({ directionAngle: this.hero.directionAngle, time: this.gameTimer ? new Date().getTime() - this.gameTimer : 0 });
+			}
+			this.hero.selectSprites();
+		});
 	}
 }

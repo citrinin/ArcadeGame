@@ -2,13 +2,13 @@ import Person from './person';
 
 export default class DummyEnemy extends Person {
     constructor(gameState, settings = {}) {
-        super(gameState);
+        super(gameState, 'goblin');
+        this.selectSprites();
         this.width = 36;
         this.height = 48;
-        this.getSprites();
-        this.generatePosition();
         //запоминаем позицию и время появления врага
         if (this.game.originalGame) {
+            this.generatePosition();
             this.game.replayData.dummyEnemies.push({
                 settings: {
                     position: {
@@ -17,13 +17,21 @@ export default class DummyEnemy extends Person {
                     },
                     directionAngle: this.directionAngle
                 },
-                time: new Date().getTime() - this.game.gameTimer
+                time: this.game.gameTimer ? new Date().getTime() - this.game.gameTimer : 0
             });
         } else {
-            this.position.x = settings.position.x;
-            this.position.y = settings.position.y;
+            this.position = {
+                x: settings.position.x,
+                y: settings.position.y
+            };
             this.directionAngle = settings.directionAngle;
+            console.log('enemy direction ' + this.directionAngle);
+            console.log('enemy position ' + this.position.x + ' ' + this.position.y);
         }
+    }
+    step() {
+        this.selectSprites();
+        super.step();
     }
 
     generatePosition() {
@@ -37,8 +45,5 @@ export default class DummyEnemy extends Person {
     getDistanceToHero() {
         let hero = this.game.hero;
         return Math.sqrt(Math.pow(hero.position.x - this.position.x, 2) + Math.pow(hero.position.y - this.position.y, 2));
-    }
-    getSprites() {
-        this.sprites = [].slice.call(document.querySelectorAll('.goblin-img'));
     }
 }
