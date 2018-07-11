@@ -23,6 +23,15 @@ export default class Person {
         this.sprites = this.spritesCollection.right;
     }
 
+    get directionAngle() {
+        return this._directionAngle;
+    }
+
+    set directionAngle(newValue) {
+        this._directionAngle = newValue;
+        this.selectSprites();
+    }
+
     getAllSprites() {
         this.spritesCollection = {
             left: this.getSprites(`.${this.selector}-left-img`),

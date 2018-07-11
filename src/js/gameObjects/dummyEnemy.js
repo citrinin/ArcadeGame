@@ -3,7 +3,6 @@ import Person from './person';
 export default class DummyEnemy extends Person {
     constructor(gameState, settings = {}) {
         super(gameState, 'goblin');
-        this.selectSprites();
         this.width = 36;
         this.height = 48;
         //запоминаем позицию и время появления врага
@@ -25,12 +24,11 @@ export default class DummyEnemy extends Person {
                 y: settings.position.y
             };
             this.directionAngle = settings.directionAngle;
-            console.log('enemy direction ' + this.directionAngle);
-            console.log('enemy position ' + this.position.x + ' ' + this.position.y);
+            console.log('dummy enemy direction ' + this.directionAngle);
+            console.log('dummy enemy position ' + this.position.x + ' ' + this.position.y);
         }
     }
     step() {
-        this.selectSprites();
         super.step();
     }
 

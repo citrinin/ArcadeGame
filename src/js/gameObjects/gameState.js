@@ -5,6 +5,7 @@ import FireStore from '../utils/firebase';
 
 export default class GameState {
 	constructor(elementToDraw) {
+		this.gameOnScreen = false;
 		this.width = window.innerWidth >= 1000 ? 1000 : window.innerWidth;
 
 		this.height = (document.documentElement.clientHeight
@@ -15,6 +16,7 @@ export default class GameState {
 	}
 
 	setUpGame(originalGame = true) {
+		this.gameOnScreen = true;
 		this.originalGame = originalGame;
 		this.canvas = document.createElement('canvas');
 		this.containter.innerHTML = '';
@@ -42,16 +44,18 @@ export default class GameState {
 			this.replayData.heroMoves.forEach(heroInfo => {
 				setTimeout(() => {
 					this.hero.directionAngle = heroInfo.directionAngle;
-					console.log('hero time ' + (new Date().getTime() - window.timer));
 				}, heroInfo.time);
 			});
 			this.replayData.smartEmenies.forEach(enemyInfo => {
-				setTimeout(() => { this.characters.push(new SmartEnemy(this, enemyInfo.settings)); }, enemyInfo.time);
+				setTimeout(() => {
+					this.characters.push(new SmartEnemy(this, enemyInfo.settings));
+					console.log('smart enemy time ' + (new Date().getTime() - window.timer));
+				}, enemyInfo.time);
 			});
 			this.replayData.dummyEnemies.forEach(enemyInfo => {
 				setTimeout(() => {
 					this.characters.push(new DummyEnemy(this, enemyInfo.settings));
-					console.log('enemy time ' + (new Date().getTime() - window.timer));
+					console.log('dummy enemy time ' + (new Date().getTime() - window.timer));
 
 				}, enemyInfo.time);
 
@@ -66,10 +70,11 @@ export default class GameState {
 		this.timerHandler = setInterval(() => {
 			this.context.clearRect(0, 0, this.width, this.height);
 
-			this.characters.forEach(character => this.checkCharactersIntersection(this.hero, character));
 
 			this.drawCharacter(this.hero);
 			this.characters.forEach(character => this.drawCharacter(character));
+
+			this.characters.forEach(character => this.checkCharactersIntersection(this.hero, character));
 		}, 100);
 	}
 
@@ -113,6 +118,7 @@ export default class GameState {
 		clearInterval(this.levelTimer);
 		this.gamePlays = false;
 		this.baseSpeed = 0;
+		this.gameOnScreen = false;
 	}
 
 	setLevel() {
@@ -159,35 +165,36 @@ export default class GameState {
 	}
 	setUpHero() {
 		document.addEventListener('keydown', (event) => {
-			switch (event.keyCode) {
-				case 37: {
-					this.hero.directionAngle = Math.PI;
-					break;
+			if (this.gameOnScreen) {
+				switch (event.keyCode) {
+					case 37: {
+						this.hero.directionAngle = Math.PI;
+						break;
+					}
+					case 38: {
+						this.hero.directionAngle = Math.PI / 2;
+						break;
+					}
+					case 39: {
+						this.hero.directionAngle = 0;
+						break;
+					}
+					case 40: {
+						this.hero.directionAngle = Math.PI / 2 * 3;
+						break;
+					}
+					default: {
+						return;
+					}
 				}
-				case 38: {
-					this.hero.directionAngle = Math.PI / 2;
-					break;
+				if (!this.gamePlays) {
+					this.runGame();
 				}
-				case 39: {
-					this.hero.directionAngle = 0;
-					break;
-				}
-				case 40: {
-					this.hero.directionAngle = Math.PI / 2 * 3;
-					break;
-				}
-				default: {
-					return;
+				//запоминаем движения героя
+				if (this.originalGame) {
+					this.replayData.heroMoves.push({ directionAngle: this.hero.directionAngle, time: this.gameTimer ? new Date().getTime() - this.gameTimer : 0 });
 				}
 			}
-			if (!this.gamePlays) {
-				this.runGame();
-			}
-			//запоминаем движения героя
-			if (this.originalGame) {
-				this.replayData.heroMoves.push({ directionAngle: this.hero.directionAngle, time: this.gameTimer ? new Date().getTime() - this.gameTimer : 0 });
-			}
-			this.hero.selectSprites();
 		});
 	}
 }

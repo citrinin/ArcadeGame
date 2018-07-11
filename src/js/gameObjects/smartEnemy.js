@@ -3,7 +3,6 @@ import Person from './person';
 export default class SmartEnemy extends Person {
     constructor(gameState, settings = {}) {
         super(gameState, 'rogue');
-        this.selectSprites();
         this.range = 300;
         this.width = 40;
         this.height = 45;
@@ -26,6 +25,8 @@ export default class SmartEnemy extends Person {
                 y: settings.position.y
             };
             this.directionAngle = settings.directionAngle;
+            console.log('smart enemy direction ' + this.directionAngle);
+            console.log('smart enemy position ' + this.position.x + ' ' + this.position.y);
         }
     }
     step() {
@@ -40,7 +41,6 @@ export default class SmartEnemy extends Person {
             } else {
                 this.directionAngle = Math.PI - atan;
             }
-            this.selectSprites();
         }
         super.step();
     }
