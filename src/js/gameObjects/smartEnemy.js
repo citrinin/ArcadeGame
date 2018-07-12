@@ -2,22 +2,26 @@ import Person from './person';
 
 export default class SmartEnemy extends Person {
     constructor(gameState) {
-        super(gameState, '.smart-enemy-img');
-        this.range = 400;
-        this.width = 75;
-        this.height = 95;
+        super(gameState, 'rogue');
+        this.range = 300;
+        this.width = 40;
+        this.height = 45;
+
         this.generatePosition();
+
+
     }
     step() {
         let heroPosition = this.game.hero.position;
         let enemyPosition = this.position;
         if (this.getDistanceToHero() <= this.range && (heroPosition.x !== enemyPosition.x)) {
             let atan = Math.atan((heroPosition.y - enemyPosition.y) / (heroPosition.x - enemyPosition.x));
+
             if (((heroPosition.x > enemyPosition.x) && (heroPosition.y < enemyPosition.y)) ||
-                ((heroPosition.x - enemyPosition.x > 0) && (heroPosition.y - enemyPosition.y > 0))) {
-                this.directionAngle = atan; //ok
+                ((heroPosition.x > enemyPosition.x) && (heroPosition.y > enemyPosition.y))) {
+                this.directionAngle = 2 * Math.PI - atan;
             } else {
-                this.directionAngle = Math.PI + atan; //ok
+                this.directionAngle = Math.PI - atan;
             }
         }
         super.step();

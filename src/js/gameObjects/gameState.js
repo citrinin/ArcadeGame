@@ -5,23 +5,22 @@ import FireStore from '../utils/firebase';
 
 export default class GameState {
 	constructor(elementToDraw) {
+		this.gameOnScreen = false;
 		this.width = window.innerWidth >= 1000 ? 1000 : window.innerWidth;
 
 		this.height = (document.documentElement.clientHeight
 			|| document.body.clientHeight) - 160;
 
 		this.containter = elementToDraw;
+		this.setUpHero();
 	}
 
 	setUpGame() {
-		this.canvas = document.createElement('canvas');
-		this.containter.innerHTML = '';
-		this.containter.appendChild(this.canvas);
-		this.canvas.width = this.width;
-		this.canvas.height = this.height;
-		this.context = this.canvas.getContext('2d');
+		this.setUpCanvas();
 
 		this.hero = new Hero(this);
+
+		this.replayData = [];
 		this.characters = new Array(2).fill(0).map(() => new DummyEnemy(this));
 		this.characters.push(new SmartEnemy(this));
 
@@ -30,24 +29,40 @@ export default class GameState {
 		this.gamePlays = false;
 		this.gameTimer = 0;
 
-		this.timerHandler = setInterval(() => {
-			this.context.clearRect(0, 0, this.width, this.height);
+		this.timerHandler = setInterval(() => this.gameStep(), 100);
+	}
 
-			this.characters.forEach(character => this.checkCharactersIntersection(this.hero, character));
+	gameStep() {
+		this.context.clearRect(0, 0, this.width, this.height);
 
-			this.drawCharacter(this.hero);
-			this.characters.forEach(character => this.drawCharacter(character));
-		}, 30);
+		let stepData = [];
+		this.drawCharacter(this.hero);
+		stepData.push({
+			character: this.hero,
+			state: this.hero.personState
+		});
+		this.characters.forEach(character => {
+			this.drawCharacter(character);
+			stepData.push({
+				character: character,
+				state: character.personState
+			});
+		});
+
+		this.gamePlays && this.replayData.push(stepData);
+		this.characters.forEach(character => this.checkCharactersIntersection(this.hero, character));
 	}
 
 	drawCharacter(character) {
-		if (character.imageOrientation()) {
-			this.context.save();
-			this.context.scale(-1, 1);
-			this.context.drawImage(character.getNextSprite(), character.position.x * -1, character.position.y, character.width * -1, character.height);
-			this.context.restore();
-		} else {
-			this.context.drawImage(character.getNextSprite(), character.position.x, character.position.y, character.width, character.height);
+		this.context.drawImage(character.getNextSprite(), character.position.x, character.position.y, character.width, character.height);
+	}
+
+	checkCharactersIntersection(hero, enemy) {
+		let deltaX = 20;
+		let deltaY = 20;
+		if (((hero.position.x + deltaX <= (enemy.position.x + enemy.width)) && ((hero.position.x + hero.width) >= enemy.position.x + deltaX)) &&
+			((hero.position.y + deltaY <= (enemy.position.y + enemy.height)) && ((hero.position.y + hero.height) >= enemy.position.y + deltaY))) {
+			this.loseGame();
 		}
 	}
 
@@ -58,39 +73,32 @@ export default class GameState {
 		this.setLevel();
 	}
 
+	loseGame() {
+		this.endGame();
+		let score = (new Date().getTime() - this.gameTimer) / 1000;
+		let name = prompt(`Your score is ${score} seconds.\n Enter your name`, 'Batman');
+		name && FireStore.saveScore({
+			name, score
+		});
+		this.addEndGameButtons();
+	}
+
 	endGame() {
 		clearInterval(this.timerHandler);
 		clearInterval(this.levelTimer);
 		this.gamePlays = false;
 		this.baseSpeed = 0;
-
-	}
-	loseGame() {
-		this.endGame();
-		let score = (new Date().getTime() - this.gameTimer) / 1000;
-		let name = prompt(`Your score is ${score} seconds.\n Enter your name`, 'Ninja');
-		name && FireStore.saveScore({
-			name, score
-		});
-	}
-	checkCharactersIntersection(hero, enemy) {
-		let deltaX = 35;
-		let deltaY = 10;
-		if (((hero.position.x + deltaX <= (enemy.position.x + enemy.width)) && ((hero.position.x + hero.width) >= enemy.position.x + deltaX)) &&
-			((hero.position.y + deltaY <= (enemy.position.y + enemy.height)) && ((hero.position.y + hero.height) >= enemy.position.y + deltaY))) {
-			hero.die();
-			this.loseGame();
-		}
+		this.gameOnScreen = false;
 	}
 
 	setLevel() {
 		this.levelTimer = setInterval(() => {
 			this.level += 1;
+
 			this.characters.push(new DummyEnemy(this));
 			if (this.level % 2 == 1) {
 				this.characters.push(new SmartEnemy(this));
 			}
-
 			let message = document.createElement('div');
 			message.classList.add('level-up');
 			message.innerHTML = `Level Up! Current level - ${this.level}`;
@@ -100,5 +108,89 @@ export default class GameState {
 				this.containter.removeChild(message);
 			}, 1000);
 		}, 10000);
+	}
+
+	addEndGameButtons() {
+		let divForButtons = document.createElement('div');
+		divForButtons.classList.add('end-buttons');
+
+		let replayButton = document.createElement('button');
+		replayButton.innerHTML = `Watch replay ${this.originalGame ? '' : 'again'}`;
+		replayButton.addEventListener('click', () => {
+			window.location.hash = 'watchreplay';
+		});
+
+		let startNewGameButton = document.createElement('button');
+		startNewGameButton.innerHTML = 'Start new game';
+		startNewGameButton.addEventListener('click', () => {
+			window.location.hash = 'game';
+		});
+
+		divForButtons.appendChild(replayButton);
+		divForButtons.appendChild(startNewGameButton);
+
+		this.containter.appendChild(divForButtons);
+	}
+	setUpHero() {
+		document.addEventListener('keydown', (event) => {
+			if (this.gameOnScreen) {
+				switch (event.keyCode) {
+					case 37: {
+						this.hero.directionAngle = Math.PI;
+						break;
+					}
+					case 38: {
+						this.hero.directionAngle = Math.PI / 2;
+						break;
+					}
+					case 39: {
+						this.hero.directionAngle = 0;
+						break;
+					}
+					case 40: {
+						this.hero.directionAngle = Math.PI / 2 * 3;
+						break;
+					}
+					default: {
+						return;
+					}
+				}
+				if (!this.gamePlays) {
+					this.runGame();
+				}
+			}
+		});
+	}
+
+	setUpCanvas() {
+		this.gameOnScreen = true;
+		this.canvas = document.createElement('canvas');
+		this.containter.innerHTML = '';
+		this.containter.appendChild(this.canvas);
+		this.canvas.width = this.width;
+		this.canvas.height = this.height;
+		this.context = this.canvas.getContext('2d');
+	}
+
+	replayGame() {
+		clearInterval(this.replayTimer);
+		let currentState = 0;
+		this.replayTimer = setInterval(() => {
+			if (currentState >= (this.replayData || []).length) {
+				clearInterval(this.replayTimer);
+				return;
+			}
+			this.context.clearRect(0, 0, this.width, this.height);
+
+			let state = this.replayData[currentState];
+			state.forEach(data => {
+				data.character.personState = data.state;
+
+				this.drawCharacter(data.character);
+
+
+			});
+			currentState++;
+		}, 20);
 	}
 }

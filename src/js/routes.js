@@ -15,7 +15,7 @@ const routes = [
         match: 'about',
         onEnter: () => {
             changeActivePage('about');
-            content.innerHTML = '<h1 class="about"><span>Super game Cat vs Ninjas</span><h1>';
+            content.innerHTML = '<h1 class="about"><span>Super arcade game</span><h1>';
         }
     },
     {
@@ -51,6 +51,24 @@ const routes = [
             });
         }
     },
+    {
+        match: 'replay',
+        onEnter: () => {
+            if ((game.replayData || []).length === 0) {
+                window.location.hash = 'game';
+                return;
+            }
+            game.replayGame();
+        }
+
+    },
+    {
+        match: 'watchreplay',
+        onEnter: () => {
+            window.location.hash = 'replay';
+        }
+
+    }
 ];
 
 function changeActivePage(newPage) {

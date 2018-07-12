@@ -2,10 +2,16 @@ import Person from './person';
 
 export default class DummyEnemy extends Person {
     constructor(gameState) {
-        super(gameState, '.dummy-enemy-img');
-        this.width = 75;
-        this.height = 95;
+        super(gameState, 'goblin');
+        this.width = 36;
+        this.height = 48;
+
         this.generatePosition();
+
+
+    }
+    step() {
+        super.step();
     }
 
     generatePosition() {
@@ -20,4 +26,5 @@ export default class DummyEnemy extends Person {
         let hero = this.game.hero;
         return Math.sqrt(Math.pow(hero.position.x - this.position.x, 2) + Math.pow(hero.position.y - this.position.y, 2));
     }
+
 }

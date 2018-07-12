@@ -1,14 +1,62 @@
 export default class Person {
     constructor(gameState, selector) {
+        this.selector = selector;
+        this.getAllSprites();
         this.game = gameState;
         this.directionAngle = 2 * Math.PI * Math.random();
-        this.position = {
-            x: 0,
-            y: 0
-        };
-        this.sprites = [].slice.call(document.querySelectorAll(selector));
         this.speed = gameState.level * gameState.baseSpeed / 2;
         this.currentImg = 0;
+    }
+    selectSprites() {
+        if ((this.directionAngle >= Math.PI * 5 / 4) && (this.directionAngle <= Math.PI * 7 / 4)) {
+            this.sprites = this.spritesCollection.down;
+            return;
+        }
+        if ((this.directionAngle >= Math.PI / 4) && (this.directionAngle <= Math.PI * 3 / 4)) {
+            this.sprites = this.spritesCollection.up;
+            return;
+        }
+        if ((this.directionAngle >= Math.PI * 3 / 4) && (this.directionAngle <= Math.PI * 5 / 4)) {
+            this.sprites = this.spritesCollection.left;
+            return;
+        }
+        this.sprites = this.spritesCollection.right;
+    }
+
+    get directionAngle() {
+        return this._directionAngle;
+    }
+
+    set directionAngle(newValue) {
+        this._directionAngle = newValue;
+        this.selectSprites();
+    }
+
+    get personState() {
+        return {
+            x: this.position.x,
+            y: this.position.y,
+            directionAngle: this.directionAngle
+        };
+    }
+
+    set personState(newPosition) {
+        this.directionAngle = newPosition.directionAngle;
+        this.position.x = newPosition.x;
+        this.position.y = newPosition.y;
+    }
+
+    getAllSprites() {
+        this.spritesCollection = {
+            left: this.getSprites(`.${this.selector}-left-img`),
+            right: this.getSprites(`.${this.selector}-right-img`),
+            up: this.getSprites(`.${this.selector}-up-img`),
+            down: this.getSprites(`.${this.selector}-down-img`)
+        };
+    }
+
+    getSprites(selector) {
+        return [].slice.call(document.querySelectorAll(selector));
     }
     getNextSprite() {
         this.step();
@@ -16,10 +64,6 @@ export default class Person {
             this.currentImg = 0;
         }
         return this.sprites[this.currentImg++];
-    }
-
-    imageOrientation() {
-        return this.directionAngle >= Math.PI / 2 && this.directionAngle <= Math.PI * 3 / 2;
     }
 
     step() {
@@ -31,7 +75,7 @@ export default class Person {
         if (this.position.x + this.width / 2 < 0) {
             this.position.x = this.game.width - this.width / 2;
         }
-        this.position.y += Math.sin(this.directionAngle) * this.speed;
+        this.position.y -= Math.sin(this.directionAngle) * this.speed;
         if (this.position.y + this.height / 2 > this.game.height) {
             this.position.y = -this.height / 2;
         }
