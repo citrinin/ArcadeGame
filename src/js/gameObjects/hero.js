@@ -23,12 +23,14 @@ export default class Hero extends Person {
         this.selectSprites();
         this.rageMode = true;
         this.width = 75;
+        this.game.canvas.classList.add('rage-canvas');
         setTimeout(() => {
             this.spritesCollection = this.normalSpritesColletcion;
             this.selectSprites();
             this.rageMode = false;
             this.width = 55;
-        }, 5000);
+            this.game.canvas.classList.remove('rage-canvas');
+        }, 3000);
     }
 
     get personState() {

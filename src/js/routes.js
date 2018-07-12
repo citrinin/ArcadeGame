@@ -15,7 +15,7 @@ const routes = [
         match: 'about',
         onEnter: () => {
             changeActivePage('about');
-            content.innerHTML = '<h1 class="about"><span>Super arcade game</span></h1><div class="w-100"/><div><h3>Author <a href="https://github.com/citrinin">Kate Kuzkina</a></h3></div>';
+            content.innerHTML = '<h1><span>Super arcade game</span></h1><div class="w-100"/><div><h2>Author <a href="https://github.com/citrinin">Kate Kuzkina</a></h2></div>';
         }
     },
     {

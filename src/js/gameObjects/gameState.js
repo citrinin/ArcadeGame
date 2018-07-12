@@ -49,9 +49,12 @@ export default class GameState {
 		});
 
 
-
-		if (this.characters.some(character => this.checkCharactersIntersection(this.hero, character))) {
-			this.loseGame();
+		if (this.hero.rageMode) {
+			this.characters = this.characters.filter(character => !this.checkCharactersIntersection(this.hero, character));
+		} else {
+			if (this.characters.some(character => this.checkCharactersIntersection(this.hero, character))) {
+				this.loseGame();
+			}
 		}
 
 		this.fruits.forEach(fruit => {
@@ -126,7 +129,7 @@ export default class GameState {
 			if (this.level % 2 === 1) {
 				this.characters.push(new SmartEnemy(this));
 			}
-			if (this.level >= 1) {
+			if (this.level >= 4) {
 				this.fruits.push(new Fruit(this));
 			}
 			let message = document.createElement('div');
@@ -215,10 +218,7 @@ export default class GameState {
 			let state = this.replayData[currentState];
 			state.forEach(data => {
 				data.character.personState = data.state;
-
 				this.drawCharacter(data.character);
-
-
 			});
 			currentState++;
 		}, 20);
