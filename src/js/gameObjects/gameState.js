@@ -39,10 +39,7 @@ export default class GameState {
 
 		let stepData = [];
 		this.drawCharacter(this.hero);
-		stepData.push({
-			character: this.hero,
-			state: this.hero.personState
-		});
+
 		this.characters.forEach(character => {
 			this.drawCharacter(character);
 			stepData.push({
@@ -51,12 +48,36 @@ export default class GameState {
 			});
 		});
 
+
+
+		if (this.characters.some(character => this.checkCharactersIntersection(this.hero, character))) {
+			this.loseGame();
+		}
+
 		this.fruits.forEach(fruit => {
 			this.drawCharacter(fruit);
+			stepData.push({
+				character: fruit,
+				state: fruit.personState
+			});
+		});
+		this.fruits = this.fruits.filter(fruit => {
+			var result = this.checkCharactersIntersection(this.hero, fruit);
+			if (result) {
+				this.hero.enableRage();
+				return false;
+			}
+			return true;
 		});
 
+
+		stepData.push({
+			character: this.hero,
+			state: this.hero.personState
+		});
+
+
 		this.gamePlays && this.replayData.push(stepData);
-		this.characters.forEach(character => this.checkCharactersIntersection(this.hero, character));
 	}
 
 	drawCharacter(character) {
@@ -68,7 +89,7 @@ export default class GameState {
 		let deltaY = 20;
 		if (((hero.position.x + deltaX <= (enemy.position.x + enemy.width)) && ((hero.position.x + hero.width) >= enemy.position.x + deltaX)) &&
 			((hero.position.y + deltaY <= (enemy.position.y + enemy.height)) && ((hero.position.y + hero.height) >= enemy.position.y + deltaY))) {
-			this.loseGame();
+			return true;
 		}
 	}
 
@@ -124,7 +145,7 @@ export default class GameState {
 		divForButtons.classList.add('end-buttons');
 
 		let replayButton = document.createElement('button');
-		replayButton.innerHTML = `Watch replay ${this.originalGame ? '' : 'again'}`;
+		replayButton.innerHTML = 'Watch replay';
 		replayButton.addEventListener('click', () => {
 			window.location.hash = 'watchreplay';
 		});

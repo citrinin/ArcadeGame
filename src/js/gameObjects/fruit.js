@@ -9,6 +9,19 @@ export default class Fruit {
     getNextSprite() {
         return this.sprite;
     }
+
+    get personState() {
+        return {
+            x: this.position.x,
+            y: this.position.y,
+        };
+    }
+
+    set personState(newPosition) {
+        this.position.x = newPosition.x;
+        this.position.y = newPosition.y;
+    }
+
     generatePosition() {
         do {
             this.position = {
