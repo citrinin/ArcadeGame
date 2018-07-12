@@ -25,8 +25,6 @@ export default class SmartEnemy extends Person {
                 y: settings.position.y
             };
             this.directionAngle = settings.directionAngle;
-            console.log('smart enemy direction ' + this.directionAngle);
-            console.log('smart enemy position ' + this.position.x + ' ' + this.position.y);
         }
     }
     step() {

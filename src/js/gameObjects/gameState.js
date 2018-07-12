@@ -40,7 +40,6 @@ export default class GameState {
 			this.characters = new Array(2).fill(0).map(() => new DummyEnemy(this));
 			this.characters.push(new SmartEnemy(this));
 		} else {
-			console.log(this.replayData);
 			this.replayData.heroMoves.forEach(heroInfo => {
 				setTimeout(() => {
 					this.hero.directionAngle = heroInfo.directionAngle;
@@ -49,13 +48,11 @@ export default class GameState {
 			this.replayData.smartEmenies.forEach(enemyInfo => {
 				setTimeout(() => {
 					this.characters.push(new SmartEnemy(this, enemyInfo.settings));
-					console.log('smart enemy time ' + (new Date().getTime() - window.timer));
 				}, enemyInfo.time);
 			});
 			this.replayData.dummyEnemies.forEach(enemyInfo => {
 				setTimeout(() => {
 					this.characters.push(new DummyEnemy(this, enemyInfo.settings));
-					console.log('dummy enemy time ' + (new Date().getTime() - window.timer));
 
 				}, enemyInfo.time);
 

@@ -24,8 +24,6 @@ export default class DummyEnemy extends Person {
                 y: settings.position.y
             };
             this.directionAngle = settings.directionAngle;
-            console.log('dummy enemy direction ' + this.directionAngle);
-            console.log('dummy enemy position ' + this.position.x + ' ' + this.position.y);
         }
     }
     step() {
