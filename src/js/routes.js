@@ -51,6 +51,13 @@ const routes = [
             });
         }
     },
+    {
+        match: 'replay',
+        onEnter: () => {
+
+        }
+
+    }
 ];
 
 function changeActivePage(newPage) {
