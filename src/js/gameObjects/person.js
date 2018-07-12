@@ -32,6 +32,20 @@ export default class Person {
         this.selectSprites();
     }
 
+    get personState() {
+        return {
+            x: this.position.x,
+            y: this.position.y,
+            directionAngle: this.directionAngle
+        };
+    }
+
+    set personState(newPosition) {
+        this.directionAngle = newPosition.directionAngle;
+        this.position.x = newPosition.x;
+        this.position.y = newPosition.y;
+    }
+
     getAllSprites() {
         this.spritesCollection = {
             left: this.getSprites(`.${this.selector}-left-img`),

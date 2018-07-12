@@ -54,7 +54,18 @@ const routes = [
     {
         match: 'replay',
         onEnter: () => {
+            if ((game.replayData || []).length === 0) {
+                window.location.hash = 'game';
+                return;
+            }
+            game.replayGame();
+        }
 
+    },
+    {
+        match: 'watchreplay',
+        onEnter: () => {
+            window.location.hash = 'replay';
         }
 
     }

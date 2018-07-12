@@ -28,36 +28,9 @@ export default class GameState {
 
 		this.hero = new Hero(this);
 
-		this.characters = [];
-
-		//идет оригинальная игра?
-		if (this.originalGame) {
-			this.replayData = {
-				heroMoves: [],
-				smartEmenies: [],
-				dummyEnemies: []
-			};
-			this.characters = new Array(2).fill(0).map(() => new DummyEnemy(this));
-			this.characters.push(new SmartEnemy(this));
-		} else {
-			this.replayData.heroMoves.forEach(heroInfo => {
-				setTimeout(() => {
-					this.hero.directionAngle = heroInfo.directionAngle;
-				}, heroInfo.time);
-			});
-			this.replayData.smartEmenies.forEach(enemyInfo => {
-				setTimeout(() => {
-					this.characters.push(new SmartEnemy(this, enemyInfo.settings));
-				}, enemyInfo.time);
-			});
-			this.replayData.dummyEnemies.forEach(enemyInfo => {
-				setTimeout(() => {
-					this.characters.push(new DummyEnemy(this, enemyInfo.settings));
-
-				}, enemyInfo.time);
-
-			});
-		}
+		this.replayData = [];
+		this.characters = new Array(2).fill(0).map(() => new DummyEnemy(this));
+		this.characters.push(new SmartEnemy(this));
 
 		this.level = 1;
 		this.baseSpeed = 0;
@@ -67,11 +40,25 @@ export default class GameState {
 		this.timerHandler = setInterval(() => {
 			this.context.clearRect(0, 0, this.width, this.height);
 
-
+			let stepData = [];
 			this.drawCharacter(this.hero);
-			this.characters.forEach(character => this.drawCharacter(character));
+			stepData.push({
+				character: this.hero,
+				state: this.hero.personState
+			});
+			this.characters.forEach(character => {
+				this.drawCharacter(character);
+				stepData.push({
+					character: character,
+					state: character.personState
+				});
+			});
+
+			this.gamePlays && this.replayData.push(stepData);
 
 			this.characters.forEach(character => this.checkCharactersIntersection(this.hero, character));
+
+
 		}, 100);
 	}
 
@@ -80,10 +67,7 @@ export default class GameState {
 	}
 
 	runGame() {
-		if (this.originalGame) {
-			this.gameTimer = new Date().getTime();
-		}
-		window.timer = new Date().getTime();
+		this.gameTimer = new Date().getTime();
 		this.gamePlays = true;
 		this.baseSpeed = 5;
 		this.setLevel();
@@ -121,21 +105,19 @@ export default class GameState {
 	setLevel() {
 		this.levelTimer = setInterval(() => {
 			this.level += 1;
-			if (this.originalGame) {
-				this.characters.push(new DummyEnemy(this));
-				if (this.level % 2 == 1) {
-					this.characters.push(new SmartEnemy(this));
-				}
-				let message = document.createElement('div');
-				message.classList.add('level-up');
-				message.innerHTML = `Level Up! Current level - ${this.level}`;
 
-				this.containter.appendChild(message);
-				setTimeout(() => {
-					this.containter.removeChild(message);
-				}, 1000);
+			this.characters.push(new DummyEnemy(this));
+			if (this.level % 2 == 1) {
+				this.characters.push(new SmartEnemy(this));
 			}
+			let message = document.createElement('div');
+			message.classList.add('level-up');
+			message.innerHTML = `Level Up! Current level - ${this.level}`;
 
+			this.containter.appendChild(message);
+			setTimeout(() => {
+				this.containter.removeChild(message);
+			}, 1000);
 		}, 10000);
 	}
 	addEndGameButtons() {
@@ -145,14 +127,13 @@ export default class GameState {
 		let replayButton = document.createElement('button');
 		replayButton.innerHTML = `Watch replay ${this.originalGame ? '' : 'again'}`;
 		replayButton.addEventListener('click', () => {
-			this.setUpGame(false);
-			this.runGame();
+			window.location.hash = 'watchreplay';
 		});
 
 		let startNewGameButton = document.createElement('button');
 		startNewGameButton.innerHTML = 'Start new game';
 		startNewGameButton.addEventListener('click', () => {
-			this.setUpGame();
+			window.location.hash = 'game';
 		});
 
 		divForButtons.appendChild(replayButton);
@@ -187,11 +168,28 @@ export default class GameState {
 				if (!this.gamePlays) {
 					this.runGame();
 				}
-				//запоминаем движения героя
-				if (this.originalGame) {
-					this.replayData.heroMoves.push({ directionAngle: this.hero.directionAngle, time: this.gameTimer ? new Date().getTime() - this.gameTimer : 0 });
-				}
 			}
 		});
 	}
+	replayGame() {
+		let currentState = 0;
+		let replayTimer = setInterval(() => {
+			if (currentState >= (this.replayData || []).length) {
+				clearInterval(replayTimer);
+				return;
+			}
+			this.context.clearRect(0, 0, this.width, this.height);
+
+			let state = this.replayData[currentState];
+			state.forEach(data => {
+				data.character.personState = data.state;
+
+				this.drawCharacter(data.character);
+
+
+			});
+			currentState++;
+		}, 20);
+	}
+
 }

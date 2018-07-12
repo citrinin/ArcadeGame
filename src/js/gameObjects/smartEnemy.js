@@ -1,31 +1,15 @@
 import Person from './person';
 
 export default class SmartEnemy extends Person {
-    constructor(gameState, settings = {}) {
+    constructor(gameState) {
         super(gameState, 'rogue');
         this.range = 300;
         this.width = 40;
         this.height = 45;
-        //запоминаем позицию и время появления врага
-        if (this.game.originalGame) {
-            this.generatePosition();
-            this.game.replayData.smartEmenies.push({
-                settings: {
-                    position: {
-                        x: this.position.x,
-                        y: this.position.y
-                    },
-                    directionAngle: this.directionAngle
-                },
-                time: this.game.gameTimer ? new Date().getTime() - this.game.gameTimer : 0
-            });
-        } else {
-            this.position = {
-                x: settings.position.x,
-                y: settings.position.y
-            };
-            this.directionAngle = settings.directionAngle;
-        }
+
+        this.generatePosition();
+
+
     }
     step() {
         let heroPosition = this.game.hero.position;
