@@ -68,6 +68,12 @@ const routes = [
             window.location.hash = 'replay';
         }
 
+    }, {
+        match: 'newgame',
+        onEnter: () => {
+            window.location.hash = 'game';
+        }
+
     }
 ];
 

@@ -2,6 +2,7 @@ import Hero from './hero';
 import DummyEnemy from './dummyEnemy';
 import SmartEnemy from './smartEnemy';
 import FireStore from '../utils/firebase';
+import Fruit from './fruit';
 
 export default class GameState {
 	constructor(elementToDraw) {
@@ -23,6 +24,7 @@ export default class GameState {
 		this.replayData = [];
 		this.characters = new Array(2).fill(0).map(() => new DummyEnemy(this));
 		this.characters.push(new SmartEnemy(this));
+		this.fruits = [];
 
 		this.level = 1;
 		this.baseSpeed = 0;
@@ -47,6 +49,10 @@ export default class GameState {
 				character: character,
 				state: character.personState
 			});
+		});
+
+		this.fruits.forEach(fruit => {
+			this.drawCharacter(fruit);
 		});
 
 		this.gamePlays && this.replayData.push(stepData);
@@ -96,8 +102,11 @@ export default class GameState {
 			this.level += 1;
 
 			this.characters.push(new DummyEnemy(this));
-			if (this.level % 2 == 1) {
+			if (this.level % 2 === 1) {
 				this.characters.push(new SmartEnemy(this));
+			}
+			if (this.level >= 1) {
+				this.fruits.push(new Fruit(this));
 			}
 			let message = document.createElement('div');
 			message.classList.add('level-up');
@@ -123,7 +132,7 @@ export default class GameState {
 		let startNewGameButton = document.createElement('button');
 		startNewGameButton.innerHTML = 'Start new game';
 		startNewGameButton.addEventListener('click', () => {
-			window.location.hash = 'game';
+			window.location.hash = 'newgame';
 		});
 
 		divForButtons.appendChild(replayButton);
