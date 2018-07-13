@@ -10,6 +10,14 @@ canvas {
     background-color: rgb(156, 168, 167);
 }
 
+.about>span{
+text-indent: 25px; 
+}
+
+.about{
+    padding:10px;
+}
+
 .rage-canvas{
     background-color: rgb(158, 78, 78);
 }
