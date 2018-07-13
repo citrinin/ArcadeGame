@@ -10,6 +10,10 @@ canvas {
     background-color: rgb(156, 168, 167);
 }
 
+.rage-canvas{
+    background-color: rgb(158, 78, 78);
+}
+
 .level-up{
     position: absolute;
     top: 10;

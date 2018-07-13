@@ -2,6 +2,7 @@ import Hero from './hero';
 import DummyEnemy from './dummyEnemy';
 import SmartEnemy from './smartEnemy';
 import FireStore from '../utils/firebase';
+import Fruit from './fruit';
 
 export default class GameState {
 	constructor(elementToDraw) {
@@ -23,6 +24,7 @@ export default class GameState {
 		this.replayData = [];
 		this.characters = new Array(2).fill(0).map(() => new DummyEnemy(this));
 		this.characters.push(new SmartEnemy(this));
+		this.fruits = [];
 
 		this.level = 1;
 		this.baseSpeed = 0;
@@ -35,12 +37,13 @@ export default class GameState {
 	gameStep() {
 		this.context.clearRect(0, 0, this.width, this.height);
 
+		this.context.font = '20px Segoe UI';
+		this.context.fillText(`Scores ${this.gameTimer ? this.getScore() : 0}`, this.width - 150, 30);
+		this.context.fillText(`Level ${this.level}`, this.width - 150, 55);
+
 		let stepData = [];
 		this.drawCharacter(this.hero);
-		stepData.push({
-			character: this.hero,
-			state: this.hero.personState
-		});
+
 		this.characters.forEach(character => {
 			this.drawCharacter(character);
 			stepData.push({
@@ -49,12 +52,47 @@ export default class GameState {
 			});
 		});
 
+		this.fruits.forEach(fruit => {
+			this.drawCharacter(fruit);
+			stepData.push({
+				character: fruit,
+				state: fruit.personState
+			});
+		});
+		this.fruits = this.fruits.filter(fruit => {
+			var result = this.checkCharactersIntersection(this.hero, fruit);
+			if (result) {
+				this.hero.enableRage();
+				return false;
+			}
+			return true;
+		});
+
+
+		stepData.push({
+			character: this.hero,
+			state: this.hero.personState
+		});
+
+
 		this.gamePlays && this.replayData.push(stepData);
-		this.characters.forEach(character => this.checkCharactersIntersection(this.hero, character));
+
+		if (this.hero.rageMode) {
+			this.characters = this.characters.filter(character => !this.checkCharactersIntersection(this.hero, character));
+		} else {
+			if (this.characters.some(character => this.checkCharactersIntersection(this.hero, character))) {
+				this.loseGame();
+			}
+		}
+
 	}
 
 	drawCharacter(character) {
 		this.context.drawImage(character.getNextSprite(), character.position.x, character.position.y, character.width, character.height);
+	}
+
+	getScore() {
+		return Math.round((new Date().getTime() - this.gameTimer) / 100) / 10;
 	}
 
 	checkCharactersIntersection(hero, enemy) {
@@ -62,7 +100,7 @@ export default class GameState {
 		let deltaY = 20;
 		if (((hero.position.x + deltaX <= (enemy.position.x + enemy.width)) && ((hero.position.x + hero.width) >= enemy.position.x + deltaX)) &&
 			((hero.position.y + deltaY <= (enemy.position.y + enemy.height)) && ((hero.position.y + hero.height) >= enemy.position.y + deltaY))) {
-			this.loseGame();
+			return true;
 		}
 	}
 
@@ -74,13 +112,15 @@ export default class GameState {
 	}
 
 	loseGame() {
-		this.endGame();
-		let score = (new Date().getTime() - this.gameTimer) / 1000;
-		let name = prompt(`Your score is ${score} seconds.\n Enter your name`, 'Batman');
-		name && FireStore.saveScore({
-			name, score
-		});
-		this.addEndGameButtons();
+		setTimeout(() => {
+			this.endGame();
+			let score = this.getScore();
+			let name = prompt(`Your score is ${score} seconds.\n Enter your name`, 'I\'m Batman');
+			name && FireStore.saveScore({
+				name, score
+			});
+			this.addEndGameButtons();
+		}, 0);
 	}
 
 	endGame() {
@@ -96,8 +136,11 @@ export default class GameState {
 			this.level += 1;
 
 			this.characters.push(new DummyEnemy(this));
-			if (this.level % 2 == 1) {
+			if (this.level % 2 === 1) {
 				this.characters.push(new SmartEnemy(this));
+			}
+			if (this.level >= 1) {
+				this.fruits.push(new Fruit(this));
 			}
 			let message = document.createElement('div');
 			message.classList.add('level-up');
@@ -115,7 +158,7 @@ export default class GameState {
 		divForButtons.classList.add('end-buttons');
 
 		let replayButton = document.createElement('button');
-		replayButton.innerHTML = `Watch replay ${this.originalGame ? '' : 'again'}`;
+		replayButton.innerHTML = 'Watch replay';
 		replayButton.addEventListener('click', () => {
 			window.location.hash = 'watchreplay';
 		});
@@ -123,7 +166,7 @@ export default class GameState {
 		let startNewGameButton = document.createElement('button');
 		startNewGameButton.innerHTML = 'Start new game';
 		startNewGameButton.addEventListener('click', () => {
-			window.location.hash = 'game';
+			window.location.hash = 'newgame';
 		});
 
 		divForButtons.appendChild(replayButton);
@@ -185,10 +228,7 @@ export default class GameState {
 			let state = this.replayData[currentState];
 			state.forEach(data => {
 				data.character.personState = data.state;
-
 				this.drawCharacter(data.character);
-
-
 			});
 			currentState++;
 		}, 20);

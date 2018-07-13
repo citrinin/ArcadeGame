@@ -15,7 +15,7 @@ const routes = [
         match: 'about',
         onEnter: () => {
             changeActivePage('about');
-            content.innerHTML = '<h1 class="about"><span>Super arcade game</span><h1>';
+            content.innerHTML = '<h1><span>Super arcade game</span></h1><div class="w-100"/><div><h2>Author <a href="https://github.com/citrinin">Kate Kuzkina</a></h2></div>';
         }
     },
     {
@@ -66,6 +66,12 @@ const routes = [
         match: 'watchreplay',
         onEnter: () => {
             window.location.hash = 'replay';
+        }
+
+    }, {
+        match: 'newgame',
+        onEnter: () => {
+            window.location.hash = 'game';
         }
 
     }
