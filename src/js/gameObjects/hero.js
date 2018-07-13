@@ -19,16 +19,13 @@ export default class Hero extends Person {
         this.speed = this.game.baseSpeed * this.game.level;
     }
     enableRage() {
-        this.spritesCollection = this.furySpritesCollection;
-        this.selectSprites();
         this.rageMode = true;
-        this.width = 75;
+        this.selectSpritesCollection();
         this.game.canvas.classList.add('rage-canvas');
         setTimeout(() => this.game.canvas.classList.remove('rage-canvas'), 3000);
         setTimeout(() => {
-            this.spritesCollection = this.normalSpritesColletcion;
-            this.selectSprites();
             this.rageMode = false;
+            this.selectSpritesCollection();
         }, 3500);
     }
 
@@ -50,6 +47,17 @@ export default class Hero extends Person {
             this.spritesCollection = this.rageMode ? this.furySpritesCollection : this.normalSpritesColletcion;
             this.selectSprites();
         }
+    }
+
+    selectSpritesCollection() {
+        if (this.rageMode === true) {
+            this.width = 75;
+            this.spritesCollection = this.furySpritesCollection;
+        } else {
+            this.width = 55;
+            this.spritesCollection = this.normalSpritesColletcion;
+        }
+        this.selectSprites();
     }
 
     getAllSprites() {
