@@ -37,6 +37,10 @@ export default class GameState {
 	gameStep() {
 		this.context.clearRect(0, 0, this.width, this.height);
 
+		this.context.font = '20px Segoe UI';
+		this.context.fillText(`Scores ${this.gameTimer ? (new Date().getTime() - this.gameTimer) / 1000 : 0}`, this.width - 150, 30);
+		this.context.fillText(`Level ${this.level}`, this.width - 150, 55);
+
 		let stepData = [];
 		this.drawCharacter(this.hero);
 
@@ -47,15 +51,6 @@ export default class GameState {
 				state: character.personState
 			});
 		});
-
-
-		if (this.hero.rageMode) {
-			this.characters = this.characters.filter(character => !this.checkCharactersIntersection(this.hero, character));
-		} else {
-			if (this.characters.some(character => this.checkCharactersIntersection(this.hero, character))) {
-				this.loseGame();
-			}
-		}
 
 		this.fruits.forEach(fruit => {
 			this.drawCharacter(fruit);
@@ -81,6 +76,15 @@ export default class GameState {
 
 
 		this.gamePlays && this.replayData.push(stepData);
+
+		if (this.hero.rageMode) {
+			this.characters = this.characters.filter(character => !this.checkCharactersIntersection(this.hero, character));
+		} else {
+			if (this.characters.some(character => this.checkCharactersIntersection(this.hero, character))) {
+				this.loseGame();
+			}
+		}
+
 	}
 
 	drawCharacter(character) {
@@ -104,13 +108,15 @@ export default class GameState {
 	}
 
 	loseGame() {
-		this.endGame();
-		let score = (new Date().getTime() - this.gameTimer) / 1000;
-		let name = prompt(`Your score is ${score} seconds.\n Enter your name`, 'Batman');
-		name && FireStore.saveScore({
-			name, score
-		});
-		this.addEndGameButtons();
+		setTimeout(() => {
+			this.endGame();
+			let score = (new Date().getTime() - this.gameTimer) / 1000;
+			let name = prompt(`Your score is ${score} seconds.\n Enter your name`, 'I\'m Batman');
+			name && FireStore.saveScore({
+				name, score
+			});
+			this.addEndGameButtons();
+		}, 0);
 	}
 
 	endGame() {
