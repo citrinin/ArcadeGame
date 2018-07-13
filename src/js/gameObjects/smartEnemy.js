@@ -1,15 +1,11 @@
-import Person from './person';
+import Enemy from './enemy';
 
-export default class SmartEnemy extends Person {
+export default class SmartEnemy extends Enemy {
     constructor(gameState) {
         super(gameState, 'rogue');
         this.range = 300;
         this.width = 40;
         this.height = 45;
-
-        this.generatePosition();
-
-
     }
     step() {
         let heroPosition = this.game.hero.position;
@@ -25,19 +21,5 @@ export default class SmartEnemy extends Person {
             }
         }
         super.step();
-    }
-
-    generatePosition() {
-        do {
-            this.position = {
-                x: Math.abs(this.width - this.game.width * Math.random()),
-                y: this.game.height / 2 * Math.random()
-            };
-        } while (this.getDistanceToHero() < 200);
-    }
-
-    getDistanceToHero() {
-        let hero = this.game.hero;
-        return Math.sqrt(Math.pow(hero.position.x - this.position.x, 2) + Math.pow(hero.position.y - this.position.y, 2));
     }
 }
