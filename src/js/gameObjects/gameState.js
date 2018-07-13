@@ -139,7 +139,7 @@ export default class GameState {
 			if (this.level % 2 === 1) {
 				this.characters.push(new SmartEnemy(this));
 			}
-			if (this.level >= 1) {
+			if (this.level >= 3) {
 				this.fruits.push(new Fruit(this));
 			}
 			let message = document.createElement('div');
