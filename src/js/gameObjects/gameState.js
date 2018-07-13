@@ -38,7 +38,7 @@ export default class GameState {
 		this.context.clearRect(0, 0, this.width, this.height);
 
 		this.context.font = '20px Segoe UI';
-		this.context.fillText(`Scores ${this.gameTimer ? (new Date().getTime() - this.gameTimer) / 1000 : 0}`, this.width - 150, 30);
+		this.context.fillText(`Scores ${this.gameTimer ? this.getScore() : 0}`, this.width - 150, 30);
 		this.context.fillText(`Level ${this.level}`, this.width - 150, 55);
 
 		let stepData = [];
@@ -91,6 +91,10 @@ export default class GameState {
 		this.context.drawImage(character.getNextSprite(), character.position.x, character.position.y, character.width, character.height);
 	}
 
+	getScore() {
+		return Math.round((new Date().getTime() - this.gameTimer) / 100) / 10;
+	}
+
 	checkCharactersIntersection(hero, enemy) {
 		let deltaX = 20;
 		let deltaY = 20;
@@ -110,7 +114,7 @@ export default class GameState {
 	loseGame() {
 		setTimeout(() => {
 			this.endGame();
-			let score = (new Date().getTime() - this.gameTimer) / 1000;
+			let score = this.getScore();
 			let name = prompt(`Your score is ${score} seconds.\n Enter your name`, 'I\'m Batman');
 			name && FireStore.saveScore({
 				name, score
