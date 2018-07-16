@@ -1,3 +1,4 @@
+import imageSource from '../utils/imagesSource';
 export default class Person {
   constructor(gameState, selector) {
     this.selector = selector;
@@ -57,15 +58,19 @@ export default class Person {
 
   getAllSprites() {
     this.spritesCollection = {
-      left: this.getSprites(`.${this.selector}-left-img`),
-      right: this.getSprites(`.${this.selector}-right-img`),
-      up: this.getSprites(`.${this.selector}-up-img`),
-      down: this.getSprites(`.${this.selector}-down-img`)
+      left: this.getSprites(imageSource[this.selector].left),
+      right: this.getSprites(imageSource[this.selector].right),
+      up: this.getSprites(imageSource[this.selector].up),
+      down: this.getSprites(imageSource[this.selector].down)
     };
   }
 
-  getSprites(selector) {
-    return [].slice.call(document.querySelectorAll(selector));
+  getSprites(images) {
+    return images.map(src => {
+      var img = new Image();
+      img.src = src;
+      return img;
+    });
   }
   getNextSprite() {
     this.step();

@@ -1,4 +1,5 @@
 import Person from './person';
+import imageSource from '../utils/imagesSource';
 
 export default class Hero extends Person {
   constructor(gameState) {
@@ -62,14 +63,18 @@ export default class Hero extends Person {
   }
 
   getAllSprites() {
-    super.getAllSprites();
-    this.normalSpritesColletcion = this.spritesCollection;
-    var selector = 'knight-kills';
+    this.normalSpritesColletcion = {
+      left: this.getSprites(imageSource[this.selector].normal.left),
+      right: this.getSprites(imageSource[this.selector].normal.right),
+      up: this.getSprites(imageSource[this.selector].normal.up),
+      down: this.getSprites(imageSource[this.selector].normal.down)
+    };
+    this.spritesCollection = this.normalSpritesColletcion;
     this.furySpritesCollection = {
-      left: this.getSprites(`.${selector}-left-img`),
-      right: this.getSprites(`.${selector}-right-img`),
-      up: this.getSprites(`.${selector}-up-img`),
-      down: this.getSprites(`.${selector}-down-img`)
+      left: this.getSprites(imageSource[this.selector].rage.left),
+      right: this.getSprites(imageSource[this.selector].rage.right),
+      up: this.getSprites(imageSource[this.selector].rage.up),
+      down: this.getSprites(imageSource[this.selector].rage.down)
     };
   }
 }
