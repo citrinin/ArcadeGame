@@ -4,11 +4,10 @@ import imageSource from '../utils/imagesSource';
 export default class Hero extends Person {
   constructor(gameState) {
     super(gameState, 'knight');
-    this.width = 55;
-    this.height = 75;
+
     this.position = {
-      x: (this.game.width - this.width) / 2,
-      y: this.game.height - this.height
+      x: (this.game.width - 50) / 2,
+      y: this.game.height - 100
     };
     this.rageMode = false;
     this.sprites = this.spritesCollection.down;
@@ -53,12 +52,11 @@ export default class Hero extends Person {
 
   selectSpritesCollection() {
     if (this.rageMode === true) {
-      this.width = 75;
       this.spritesCollection = this.furySpritesCollection;
     } else {
-      this.width = 55;
       this.spritesCollection = this.normalSpritesColletcion;
     }
+    this.width = this.spritesCollection.up[0].width;
     this.selectSprites();
   }
 
@@ -75,6 +73,10 @@ export default class Hero extends Person {
       right: this.getSprites(imageSource[this.selector].rage.right),
       up: this.getSprites(imageSource[this.selector].rage.up),
       down: this.getSprites(imageSource[this.selector].rage.down)
+    };
+    this.spritesCollection.up[0].onload = ev => {
+      this.width = ev.target.width;
+      this.height = ev.target.height;
     };
   }
 }

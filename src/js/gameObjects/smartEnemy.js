@@ -4,8 +4,6 @@ export default class SmartEnemy extends Enemy {
   constructor(gameState) {
     super(gameState, 'rogue');
     this.range = 300;
-    this.width = 40;
-    this.height = 45;
   }
   step() {
     let heroPosition = this.game.hero.position;

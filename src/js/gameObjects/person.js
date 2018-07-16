@@ -1,6 +1,8 @@
 import imageSource from '../utils/imagesSource';
 export default class Person {
   constructor(gameState, selector) {
+    this.width = 0;
+    this.height = 0;
     this.selector = selector;
     this.getAllSprites();
     this.game = gameState;
@@ -62,6 +64,10 @@ export default class Person {
       right: this.getSprites(imageSource[this.selector].right),
       up: this.getSprites(imageSource[this.selector].up),
       down: this.getSprites(imageSource[this.selector].down)
+    };
+    this.spritesCollection.up[0].onload = ev => {
+      this.width = ev.target.width;
+      this.height = ev.target.height;
     };
   }
 

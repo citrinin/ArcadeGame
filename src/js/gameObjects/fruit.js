@@ -2,15 +2,18 @@ import imageSource from '../utils/imagesSource';
 
 export default class Fruit {
   constructor(gameState) {
-    this.width = 30;
-    this.height = 30;
+    this.width = 0;
+    this.height = 0;
+    this.sprite = this.generateSptite();
+    this.sprite.onload = ev => {
+      this.width = ev.target.width;
+      this.height = ev.target.height;
+    };
     this.game = gameState;
     this.position = {
       x: Math.abs(this.width - this.game.width * Math.random()),
       y: (this.game.height / 2) * Math.random()
     };
-
-    this.sprite = this.generateSptite();
   }
   getNextSprite() {
     return this.sprite;
