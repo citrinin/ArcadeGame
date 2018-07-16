@@ -1,92 +1,92 @@
-body{
-    display: flex;
-    align-items: center;
-    justify-content: center;
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-   
+
 canvas {
-    display: flex;
- 
-    background-color: rgb(156, 168, 167);
+  display: flex;
+
+  background-color: rgb(156, 168, 167);
 }
 
-.about>span{
-text-indent: 25px; 
+.about > span {
+  text-indent: 25px;
 }
 
-.about{
-    padding:10px;
+.about {
+  padding: 10px;
 }
 
-.rage-canvas{
-    background-color: rgb(158, 78, 78);
+.rage-canvas {
+  background-color: rgb(158, 78, 78);
 }
 
-.level-up{
-    position: absolute;
-    top: 10;
-    font-size: 30px;
-    font-weight: bold;
+.level-up {
+  position: absolute;
+  top: 10;
+  font-size: 30px;
+  font-weight: bold;
 }
 
-.sprite-wrapper{
-    left: -3000px;
-    top: -3000px;
-    position: absolute;
+.sprite-wrapper {
+  left: -3000px;
+  top: -3000px;
+  position: absolute;
 }
 
-.end-buttons{
-    position: absolute;
-    top: 400px;
-    font-size: 30px;
-    font-weight: bold;
+.end-buttons {
+  position: absolute;
+  top: 400px;
+  font-size: 30px;
+  font-weight: bold;
 }
 
-.end-buttons button{
-    border-radius: 10px;
-    margin: 10px;
+.end-buttons button {
+  border-radius: 10px;
+  margin: 10px;
 }
 
-.buttons{
-    position: absolute;
-    bottom: 100px;
-    width: 170px;
-    height: 170px;
+.buttons {
+  position: absolute;
+  bottom: 100px;
+  width: 170px;
+  height: 170px;
 }
 
-.right{
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    right: 0px;
-    top: 60px;
+.right {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  right: 0px;
+  top: 60px;
 }
 
-.left{
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    left: 0px;
-    top: 60px;
+.left {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  left: 0px;
+  top: 60px;
 }
 
-.up{
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    top: 0px;
-    left: 60px;
+.up {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  top: 0px;
+  left: 60px;
 }
 
-.down{
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    bottom: 0px;
-    left: 60px;
+.down {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  bottom: 0px;
+  left: 60px;
 }
 
-.buttons button{
-    border-radius: 10px;
-    opacity: 0.7;
+.buttons button {
+  border-radius: 10px;
+  opacity: 0.7;
 }
