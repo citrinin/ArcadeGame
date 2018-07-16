@@ -1,3 +1,5 @@
+import imageSource from '../utils/imagesSource';
+
 export default class Fruit {
   constructor(gameState) {
     this.width = 30;
@@ -27,7 +29,11 @@ export default class Fruit {
   }
 
   generateSptite() {
-    let sprites = document.querySelectorAll('.fruit-img');
+    let sprites = imageSource.fruits.map(src => {
+      var img = new Image();
+      img.src = src;
+      return img;
+    });
     let fruitNumber = Math.round(Math.random() * (sprites.length - 1));
     return sprites[fruitNumber];
   }

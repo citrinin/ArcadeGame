@@ -114,7 +114,16 @@ const imagesSource = {
       'goblin/goblin_run_left_004.png',
       'goblin/goblin_run_left_005.png'
     ]
-  }
+  },
+  fruits: [
+    'food/Apple.png',
+    'food/Avocado.png',
+    'food/Cherry.png',
+    'food/Lemon.png',
+    'food/MelonWater.png',
+    'food/Peach.png',
+    'food/Strawberry.png'
+  ]
 };
 
 export default imagesSource;
